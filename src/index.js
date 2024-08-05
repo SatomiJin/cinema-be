@@ -14,8 +14,6 @@ routes(app);
 
 mongoose
   .connect(`${process.env.MONGO_DB}`, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
     serverSelectionTimeoutMS: 30000, // Tăng thời gian timeout lên 30 giây
   })
   .then(() => {

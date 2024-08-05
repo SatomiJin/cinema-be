@@ -22,6 +22,7 @@ const signIn = async (req, res) => {
   } catch (e) {
     console.log(e);
     res.status(200).json({
+      e: e.toString(),
       status: "ERROR",
       message: "Error from server...",
     });
