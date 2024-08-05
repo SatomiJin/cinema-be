@@ -180,6 +180,38 @@ const deleteUser = (id) => {
   });
 };
 
+const saveFilm = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let user = await User.findOne({
+        _id: data?.id,
+      });
+      if (!user) {
+        resolve({
+          status: "ERROR",
+          message: "Người dùng không tồn tại",
+        });
+      }
+
+      if (!user?.filmHistory) {
+        user.filmHistory = [];
+      }
+
+      await user.filmHistory.push(data.filmItem);
+      await user.save();
+
+      resolve({
+        status: "OK",
+        message: "Lưu thành công",
+        history: data.filmItem,
+        // user: user,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   createUser,
   signIn,
@@ -187,4 +219,5 @@ module.exports = {
   getUserDetail,
   getAllUser,
   deleteUser,
+  saveFilm,
 };

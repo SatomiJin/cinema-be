@@ -9,5 +9,5 @@ router.post("/update-user", UserController.updateUser);
 router.get("/get-user", authUserMiddleware, UserController.getUserDetail);
 router.get("/get-all-user", authMiddleWare, UserController.getAllUser);
 router.post("/delete-user", authMiddleWare, UserController.deleteUser);
-
+router.post("/save-history", authUserMiddleware, UserController.saveFilm);
 module.exports = router;

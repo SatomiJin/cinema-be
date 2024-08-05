@@ -79,6 +79,19 @@ const deleteUser = async (req, res) => {
     });
   }
 };
+
+const saveFilm = async (req, res) => {
+  try {
+    const response = await UserService.saveFilm(req.body);
+    return res.status(200).json(response);
+  } catch (e) {
+    console.log(e);
+    res.status(200).json({
+      status: "ERROR",
+      message: "Error from server...",
+    });
+  }
+};
 module.exports = {
   createUser,
   signIn,
@@ -86,4 +99,5 @@ module.exports = {
   getUserDetail,
   getAllUser,
   deleteUser,
+  saveFilm,
 };
