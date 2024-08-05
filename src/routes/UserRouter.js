@@ -10,5 +10,5 @@ router.get("/get-user", authUserMiddleware, UserController.getUserDetail);
 router.get("/get-all-user", authMiddleWare, UserController.getAllUser);
 router.post("/delete-user", authMiddleWare, UserController.deleteUser);
 router.post("/save-history", authUserMiddleware, UserController.saveFilm);
-router.post("/test", authUserMiddleware, UserController.test);
+router.get("/test", authUserMiddleware, UserController.test);
 module.exports = router;
