@@ -5,7 +5,7 @@ const JwtService = require("./JwtService");
 const createUser = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const checkUser = await User.findOne({
+      const checkUser = await User.find({
         username: data?.username,
       });
       if (checkUser) {
