@@ -13,7 +13,11 @@ app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 routes(app);
 
 mongoose
-  .connect(`${process.env.MONGO_DB}`)
+  .connect(`${process.env.MONGO_DB}`, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 30000, // Tăng thời gian timeout lên 30 giây
+  })
   .then(() => {
     console.log("Connect DB is success!!!");
   })
