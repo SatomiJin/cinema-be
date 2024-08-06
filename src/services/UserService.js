@@ -186,6 +186,7 @@ const saveFilm = (data) => {
       let user = await User.findOne({
         _id: data?.id,
       });
+
       if (!user) {
         resolve({
           status: "ERROR",
@@ -193,19 +194,40 @@ const saveFilm = (data) => {
         });
       }
 
-      if (!user?.filmHistory) {
+      if (!user?.filmHistory || user?.filmHistory < 1) {
         user.filmHistory = [];
       }
 
-      await user.filmHistory.push(data.filmItem);
-      await user.save();
+      if (user && user?.filmHistory) {
+        if (user?.filmHistory?.some((item) => item === null)) {
+          user.filmHistory = user.filmHistory.filter((item) => item !== null);
+          // Lưu tài liệu sau khi xóa các phần tử null
+          await user.save();
 
-      resolve({
-        status: "OK",
-        message: "Lưu thành công",
-        history: data.filmItem,
-        // user: user,
-      });
+          await user.filmHistory.push(data.dataFilm);
+          await user.save();
+        } else {
+          let checkFilm = user?.filmHistory?.some(
+            (item) => item.filmEp === data?.dataFilm?.filmEp && item.slug === data?.dataFilm?.slug
+          );
+          if (checkFilm) {
+            resolve({
+              status: "OK",
+              message: "Đã có trong lịch sử",
+            });
+          } else {
+            await user.filmHistory.push(data.dataFilm);
+            await user.save();
+          }
+        }
+        resolve({
+          status: "OK",
+          message: "Lưu thành công",
+          user: user,
+          // user: user,
+        });
+      }
+      // if()
     } catch (e) {
       reject(e);
     }

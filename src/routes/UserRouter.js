@@ -11,4 +11,6 @@ router.get("/get-all-user", authMiddleWare, UserController.getAllUser);
 router.post("/delete-user", authMiddleWare, UserController.deleteUser);
 router.post("/save-history", authUserMiddleware, UserController.saveFilm);
 router.get("/test", UserController.test);
+router.post("/refresh-token", authUserMiddleware, UserController.refreshToken);
+
 module.exports = router;

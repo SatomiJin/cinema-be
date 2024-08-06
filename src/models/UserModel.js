@@ -21,6 +21,8 @@ const userSchema = new mongoose.Schema({
 
 // Middleware to limit the filmHistory to 3 films
 userSchema.pre("save", function (next) {
+  this.filmHistory = this.filmHistory.filter((film) => film != null);
+
   if (this.filmHistory.length > 3) {
     this.filmHistory = this.filmHistory.slice(this.filmHistory.length - 3);
   }

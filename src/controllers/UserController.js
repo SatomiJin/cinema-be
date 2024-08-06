@@ -17,6 +17,8 @@ const createUser = async (req, res) => {
 
 const signIn = async (req, res) => {
   try {
+    // console.log(res);
+
     const response = await UserService.signIn(req.body);
     return res.status(200).json(response);
   } catch (e) {
@@ -83,7 +85,7 @@ const deleteUser = async (req, res) => {
 
 const saveFilm = async (req, res) => {
   try {
-    const response = await UserService.saveFilm(req.body);
+    const response = await UserService.saveFilm({ id: req.headers.id, dataFilm: req.body });
     return res.status(200).json(response);
   } catch (e) {
     console.log(e);
@@ -107,6 +109,26 @@ const test = async (req, res) => {
     });
   }
 };
+
+const refreshToken = async (req, res) => {
+  try {
+    let token = req.headers.token.split(" ")[1];
+    if (!token) {
+      return res.status(200).json({
+        status: "ERROR",
+        message: "Missing parameters...",
+      });
+    }
+    const response = await JwtService.refreshTokenJwtService(token);
+    return res.status(200).json(response);
+  } catch (e) {
+    console.log(e);
+    return res.status(200).json({
+      status: "ERROR",
+      message: "Error from server...",
+    });
+  }
+};
 module.exports = {
   createUser,
   signIn,
@@ -116,4 +138,5 @@ module.exports = {
   deleteUser,
   saveFilm,
   test,
+  refreshToken,
 };
