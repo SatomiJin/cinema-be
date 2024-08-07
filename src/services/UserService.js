@@ -5,26 +5,27 @@ const JwtService = require("./JwtService");
 const createUser = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const checkUser = await User.find({
-        username: data?.username,
+      const checkUser = await User.findOne({
+        username: data.username,
       });
+
       if (checkUser) {
         resolve({
           status: "OK",
-          message: "Emai đã tồn tại",
+          message: "username đã tồn tại",
         });
-      }
-      const hashPass = bcrypt.hashSync(data?.password, 10);
+      } else {
+        const hashPass = bcrypt.hashSync(data?.password, 10);
 
-      const createNewUser = await User.create({
-        username: data?.username,
-        password: hashPass,
-        isAdmin: false,
-        phoneNumber: data?.phoneNumber,
-        address: data?.address,
-        displayName: data?.displayName,
-      });
-      if (createNewUser) {
+        const createNewUser = await User.create({
+          username: data?.username,
+          password: hashPass,
+          isAdmin: false,
+          phoneNumber: data?.phoneNumber,
+          address: data?.address,
+          displayName: data?.displayName,
+        });
+
         resolve({
           status: "OK",
           message: "Create new user success!!",
@@ -86,7 +87,7 @@ const updateUser = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       const checkUser = await User.findOne({
-        _id: data?.id,
+        _id: data?.id || data?._id,
       });
 
       if (!checkUser) {
@@ -166,14 +167,14 @@ const deleteUser = (id) => {
           status: "ERROR",
           message: "Không tìm thấy user",
         });
+      } else {
+        await User.findByIdAndDelete(id, { new: true });
+
+        resolve({
+          status: "OK",
+          message: "Xóa user thành công",
+        });
       }
-
-      await User.findByIdAndDelete(id, { new: true });
-
-      resolve({
-        status: "OK",
-        message: "Xóa user thành công",
-      });
     } catch (e) {
       reject(e);
     }

@@ -17,7 +17,6 @@ const createUser = async (req, res) => {
 
 const signIn = async (req, res) => {
   try {
-    // console.log(res);
 
     const response = await UserService.signIn(req.body);
     return res.status(200).json(response);
