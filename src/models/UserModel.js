@@ -1,5 +1,14 @@
 const mongoose = require("mongoose");
 
+const filmFavoriteSchema = new mongoose.Schema({
+  slug: { type: String },
+  filmName: { type: String },
+  filmName_origin: { type: String },
+  poster_url: { type: String },
+  thumb_url: { type: String },
+  type: { type: String },
+});
+
 const filmSchema = new mongoose.Schema({
   slug: { type: String },
   filmName: { type: String },
@@ -17,10 +26,19 @@ const userSchema = new mongoose.Schema({
   address: { type: String, required: true },
   displayName: { type: String, required: true },
   filmHistory: [filmSchema],
+  filmsFavorite: [filmFavoriteSchema],
 });
 
 // Middleware to limit the filmHistory to 3 films
 userSchema.pre("save", function (next) {
+  // Lọc những bộ phim null trong filmsFavorite
+  this.filmsFavorite = this.filmsFavorite.filter((film) => film != null);
+
+  // Giới hạn số lượng phim yêu thích tối đa là 3
+  if (this.filmsFavorite.length > 3) {
+    this.filmsFavorite = this.filmsFavorite.slice(this.filmsFavorite.length - 3);
+  }
+
   this.filmHistory = this.filmHistory.filter((film) => film != null);
 
   if (this.filmHistory.length > 3) {

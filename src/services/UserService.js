@@ -2,6 +2,7 @@ const User = require("../models/UserModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const JwtService = require("./JwtService");
+// const { favoriteFilm } = require("../controllers/UserController");
 const createUser = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -235,6 +236,167 @@ const saveFilm = (data) => {
   });
 };
 
+// filmsFavorite
+const toggleLikeFilm = (id, dataFilm) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let user = await User.findOne({
+        _id: id,
+      });
+
+      if (!user) {
+        resolve({
+          status: "ERROR",
+          message: "Người dùng không tồn tại",
+        });
+      }
+
+      if (!user?.filmsFavorite || user?.filmsFavorite < 1) {
+        user.filmsFavorite = [];
+      }
+
+      if (user && user?.filmsFavorite) {
+        if (user?.filmsFavorite?.some((item) => item === null)) {
+          user.filmsFavorite = user.filmsFavorite.filter((item) => item !== null);
+          // Lưu tài liệu sau khi xóa các phần tử null
+          await user.save();
+
+          await user.filmsFavorite.push(dataFilm);
+          await user.save();
+        } else {
+          let checkFilm = user?.filmsFavorite?.some((item) => item.slug === dataFilm?.slug);
+          if (checkFilm) {
+            let updateFavorite = user.filmsFavorite.filter((item) => item.slug !== dataFilm.slug);
+            user.filmsFavorite = updateFavorite;
+            await user.save();
+            resolve({
+              status: "UNLIKE",
+              message: "Bỏ thích phim",
+            });
+          } else {
+            user.filmsFavorite.push(dataFilm);
+            await user.save();
+            resolve({
+              status: "LIKE",
+              message: "Lưu thành công",
+              favorite: user.filmsFavorite,
+            });
+          }
+        }
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+// unLikeFilm
+const unLikeFilm = (id, dataFilm) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let user = await User.findOne({ _id: id });
+
+      if (!user) {
+        resolve({
+          status: "ERROR",
+          message: "Không tìm thấy người dùng",
+        });
+      }
+      // tìm và xóa film khỏi danh sách thích
+      let updateFavorite = user.filmsFavorite.filter((item) => item.slug !== dataFilm.slug);
+
+      //Kiểm tra có tồn tại trong mục yêu thích không
+      if (updateFavorite.length === user.filmsFavorite.length) {
+        resolve({
+          status: "ERROR",
+          message: "Film không tồn tại trong danh sách!",
+        });
+      }
+
+      user.filmsFavorite = updateFavorite;
+      await user.save();
+      resolve({
+        status: "OK",
+        message: "Cập nhật thành công!",
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+const changePassword = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.currentPassword || !data.newPassword || !data.confirmNewPassword || !data.username) {
+        resolve({
+          status: "ERROR",
+          message: {
+            vi: "Vui lòng điền đủ thông tin...",
+            en: "Please fill all parameters...",
+          },
+        });
+      } else {
+        let user = await User.findOne({
+          username: data.username,
+        });
+        if (!user) {
+          resolve({
+            status: "ERROR",
+            message: {
+              vi: "Không tìm thấy người dùng!",
+              en: "User was not found!",
+            },
+          });
+        } else {
+          let comparePassword = bcrypt.compareSync(data.currentPassword, user.password);
+          if (!comparePassword) {
+            resolve({
+              status: "ERROR",
+              message: {
+                vi: "Mật khẩu hiện tại không đúng!",
+                en: "Current password not true",
+              },
+            });
+          }
+          if (data.newPassword !== data.confirmNewPassword) {
+            resolve({
+              status: "ERROR",
+              message: {
+                vi: "Nhập lại mật khẩu không đúng!",
+                en: "Confirm password not equal to new password!",
+              },
+            });
+          }
+
+          let hashPass = bcrypt.hashSync(data.newPassword, 10);
+          let compareNewPassword = bcrypt.compareSync(data.newPassword, user.password);
+          if (compareNewPassword) {
+            resolve({
+              status: "ERROR",
+              message: {
+                vi: "Mật khẩu mới không được trùng với mật khẩu cũ!",
+                en: "The new password must not be same as the old password!",
+              },
+            });
+          } else {
+            await User.findOneAndUpdate({ username: data.username }, { password: hashPass });
+            resolve({
+              status: "OK",
+              message: {
+                vi: "Đổi mật khẩu thành công!",
+                en: "Change password is success!",
+              },
+            });
+          }
+        }
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   createUser,
   signIn,
@@ -243,4 +405,7 @@ module.exports = {
   getAllUser,
   deleteUser,
   saveFilm,
+  toggleLikeFilm,
+  changePassword,
+  unLikeFilm,
 };
