@@ -397,6 +397,59 @@ const changePassword = (data) => {
   });
 };
 
+const updateUserAdmin = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data._id) {
+        resolve({
+          status: "ERROR",
+          message: {
+            vi: "Thông tin cung cấp còn thiếu...",
+            en: "Missing parameters....",
+          },
+        });
+      } else {
+        let checkUser = await User.findOne({ _id: data._id });
+
+        if (!checkUser) {
+          resolve({
+            status: "ERROR",
+            message: {
+              vi: "Không tìm thấy người dùng",
+              en: "USer is not defined!",
+            },
+          });
+        }
+        if (checkUser.isAdmin === true) {
+          resolve({
+            status: "ERROR",
+            message: {
+              vi: "Bạn không thể thay đổi thông tin của quản trị khác",
+              en: "You can't update information of other Admin",
+            },
+          });
+        } else {
+          checkUser.displayName = data.displayName;
+          checkUser.address = data.address;
+          checkUser.phoneNumber = data.phoneNumber;
+          checkUser.isAdmin = data.isAdmin;
+          await checkUser.save();
+          resolve({
+            status: "OK",
+            user: checkUser,
+            message: {
+              vi: "Cập nhật thông tin thành công",
+              en: "Update User is success!!",
+            },
+          });
+        }
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   createUser,
   signIn,
@@ -408,4 +461,5 @@ module.exports = {
   toggleLikeFilm,
   changePassword,
   unLikeFilm,
+  updateUserAdmin,
 };

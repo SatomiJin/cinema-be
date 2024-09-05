@@ -1,14 +1,14 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-// general access token
+// general access token payload => data truyền vào
 const generalAccessToken = async (payload) => {
   const access_token = jwt.sign(
     {
       ...payload,
     },
-    process.env.ACCESS_TOKEN,
-    { expiresIn: "1d" }
+    process.env.ACCESS_TOKEN, //secret key
+    { expiresIn: "1d" } //thời gian tồn tại
   );
   return access_token;
 };

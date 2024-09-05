@@ -138,6 +138,19 @@ const changePassword = async (req, res) => {
   }
 };
 
+const updateUserAdmin = async (req, res) => {
+  try {
+    const response = await UserService.updateUserAdmin(req.body);
+    return res.status(200).json(response);
+  } catch (e) {
+    console.log(e);
+    res.status(200).json({
+      status: "ERROR",
+      message: "Error from server...",
+    });
+  }
+};
+
 const test = async (req, res) => {
   try {
     return res.status(200).json({
@@ -185,4 +198,5 @@ module.exports = {
   test,
   changePassword,
   refreshToken,
+  updateUserAdmin,
 };

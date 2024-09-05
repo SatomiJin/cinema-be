@@ -51,8 +51,7 @@ const User = mongoose.model("User", userSchema);
 
 module.exports = User;
 
-// userSchema.pre("save", function (next) {:
-
+// userSchema.pre("save", function (next) {
 // Đây là cách khai báo middleware pre-save của Mongoose. Middleware này sẽ chạy trước khi một tài liệu User được lưu vào cơ sở dữ liệu.
 // pre("save") nghĩa là middleware này sẽ được kích hoạt trước khi thực hiện thao tác save (lưu) trên một tài liệu.
 // function (next) là hàm callback được gọi khi middleware này chạy. Hàm này nhận một tham số next, là hàm cần gọi để tiếp tục quá trình lưu tài liệu.
@@ -68,6 +67,5 @@ module.exports = User;
 // slice là một phương thức của mảng trong JavaScript. Nó tạo ra một bản sao của một phần của mảng gốc.
 // this.filmHistory.length - 3 xác định vị trí bắt đầu của phần tử thứ 3 từ cuối cùng của mảng.
 // Do đó, this.filmHistory.slice(this.filmHistory.length - 3) sẽ lấy 3 phần tử cuối cùng của mảng filmHistory.
-// next();:
-
+// next();
 // Gọi hàm next() để tiếp tục quá trình lưu tài liệu. Nếu không gọi next(), quá trình lưu sẽ bị dừng lại tại middleware này.
